@@ -2,12 +2,23 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import NavBar from "./NavBar";
+import Box from '@mui/material/Box';
+import Slide from '@mui/material/Slide';
+import Typewriter from "typewriter-effect";
 
 const apiKey = process.env.REACT_APP_NASA_KEY;
 
 const NasaPhoto = () => {
-  const [photoData, setPhotoData] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [photoData, setPhotoData] = useState("");
+  const [typewriterText, setTypewriterText] = useState("");
+  const [typewriterAutoStart, setTypewriterAutoStart] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  useEffect(() => {
+    // Update the typewriter text when photoData.explanation changes
+    setTypewriterText(photoData.explanation || "");
+    setTypewriterAutoStart(true);
+  }, [photoData.explanation]);
 
   useEffect(() => {
     if (selectedDate && !isToday(selectedDate)) {
@@ -48,57 +59,62 @@ const NasaPhoto = () => {
     );
   };
 
+  const img = (
+    <img
+      src={photoData.url}
+      alt={photoData.title}
+      className="photos"
+      style={{ maxWidth: "30%", height: "auto" }}
+    />
+  );
+
   return (
     <>
       <NavBar />
       <div style={{ textAlign: "center" }}>
-        <div style={{ marginBottom: "20px" }}>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            dateFormat="yyyy-MM-dd"
-            style={{ fontSize: "18px", textAlign: "center" }}
-          />
-        </div>
-      
-        {photoData && (
-          <div style={{ fontFamily: "Arial, sans-serif", textAlign: "center" }}>
-            {photoData.media_type === "image" ? (
-              <img
-                src={photoData.url}
-                alt={photoData.title}
-                className="photos"
-                style={{ maxWidth: "30%", height: "auto" }}
-              />
-            ) : (
-              <iframe
-                title="space-video"
-                src={photoData.url}
-                frameBorder="0"
-                gesture="media"
-                allow="encrypted-media"
-                allowFullScreen
-                className="photos"
-                style={{ width: "100%", height: "500px" }}
-              />
-            )}
-            <div style={{ margin: "20px" }}>
-              <h1 style={{ fontSize: "24px", marginBottom: "10px" }}>
-                {photoData.title}
-              </h1>
-              <p
-                style={{
-                  fontSize: "16px",
-                  color: "#666",
-                  marginBottom: "10px",
-                }}
-              >
-                {photoData.date}
-              </p>
-              <p style={{ fontSize: "18px" }}>{photoData.explanation}</p>
-            </div>
+        <h1 style={{ fontSize: "24px", marginBottom: "10px", fontFamily: "Title" }}>
+          {photoData.title}
+        </h1>
+        <div style={{ fontFamily: "Roboto, sans-serif", textAlign: "center", margin: "20px" }}>
+          {photoData.media_type === "image" ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Slide direction="right" in mountOnEnter unmountOnExit>
+                {img}
+              </Slide>
+            </Box>
+          ) : (
+            <iframe
+              title="space-video"
+              src={photoData.url}
+              frameBorder="0"
+              gesture="media"
+              allow="encrypted-media"
+              allowFullScreen
+              className="photos"
+              style={{ width: "100%", height: "500px" }}
+            />
+          )}
+          <div style={{ marginBottom: "20px", marginTop: "10px", textAlign: "center" }}>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              dateFormat="dd-MM-yyyy"
+              maxDate={new Date()}
+              style={{ fontSize: "18px", textAlign: "center" }}
+            />
           </div>
-        )}
+          <p style={{ fontSize: "18px", textAlign: "left", margin: "30px", fontFamily: "Title" }}>
+            <Typewriter
+              options={{
+                strings: [typewriterText], // Use the dynamic text
+                autoStart: typewriterAutoStart,
+                pauseFor: 100000,
+                delay: 70, //This changes the speed at which the text is typed at
+                reset: true, // Reset the text before typing new content
+              }}
+            />
+          </p>
+        </div>
       </div>
     </>
   );

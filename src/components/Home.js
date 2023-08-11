@@ -30,7 +30,7 @@ export default function Home() {
             />
 
             {/* Content */}
-            <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+            <div style={{ position: "relative", zIndex: 1, textAlign: "center", marginTop: "-450px" }}>
                 <Link
                     to="/nasaphoto"
                     style={{
